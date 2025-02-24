@@ -164,16 +164,26 @@ public class MovieCollection
 
     private void searchCast()
     {
-        System.out.println(movies.get(0).getKeywords());
-
-        System.out.print("Enter a keyword search term: ");
-        String searchTerm = scanner.nextLine();
-
         // prevent case sensitivity
         searchTerm = searchTerm.toLowerCase();
 
         // arrayList to hold cast
-        ArrayList<String> cast = new ArrayList<String>();
+        ArrayList<String> casts = new ArrayList<String>();
+
+        // Search all cast
+        for (int i = 0; i < movies.size(); i++)
+        {
+            String[] individualCast = movies.get(i).getCast().split("\\|");
+            for (String cast : individualCast) {
+                if (casts.contains())
+            }
+            String keywords = movies.get(i).getKeywords();
+            if (keywords.contains(searchTerm))
+            {
+                //add the Movie objest to the results list
+                results.add(movies.get(i));
+            }
+        }
 
         // arraylist to hold search results
         ArrayList<Movie> results = new ArrayList<Movie>();
