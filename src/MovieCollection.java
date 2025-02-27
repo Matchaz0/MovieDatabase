@@ -1,18 +1,23 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class MovieCollection
 {
     private ArrayList<Movie> movies;
+    private ArrayList<String> uniqueCast;
     private Scanner scanner;
+
 
     public MovieCollection(String fileName)
     {
         importMovieList(fileName);
         scanner = new Scanner(System.in);
+        setUniqueCastMembers();
     }
 
     public ArrayList<Movie> getMovies()
@@ -164,69 +169,95 @@ public class MovieCollection
 
     private void searchCast()
     {
-        // prevent case sensitivity
-        searchTerm = searchTerm.toLowerCase();
 
-        // arrayList to hold cast
-        ArrayList<String> casts = new ArrayList<String>();
+        System.out.println(uniqueCast.size());
+//        // prevent case sensitivity
+//        searchTerm = searchTerm.toLowerCase();
+//
+//        // arrayList to hold cast
+//        ArrayList<String> casts = new ArrayList<String>();
+//
+//        // Search all cast
+//        for (int i = 0; i < movies.size(); i++)
+//        {
+//            String[] individualCast = movies.get(i).getCast().split("\\|");
+//            for (String cast : individualCast) {
+//                if (casts.contains())
+//            }
+//            String keywords = movies.get(i).getKeywords();
+//            if (keywords.contains(searchTerm))
+//            {
+//                //add the Movie objest to the results list
+//                results.add(movies.get(i));
+//            }
+//        }
+//
+//        // arraylist to hold search results
+//        ArrayList<Movie> results = new ArrayList<Movie>();
+//
+//        // search through ALL movies in collection
+//        for (int i = 0; i < movies.size(); i++)
+//        {
+//            String keywords = movies.get(i).getKeywords();
+//            if (keywords.contains(searchTerm))
+//            {
+//                //add the Movie objest to the results list
+//                results.add(movies.get(i));
+//            }
+//        }
+//
+//        // sort the results by title
+//        sortResults(results);
+//
+//        // now, display them all to the user
+//        for (int i = 0; i < results.size(); i++)
+//        {
+//            String title = results.get(i).getTitle();
+//
+//            // this will print index 0 as choice 1 in the results list; better for user!
+//            int choiceNum = i + 1;
+//
+//            System.out.println("" + choiceNum + ". " + title);
+//        }
+//
+//        System.out.println("Which movie would you like to learn more about?");
+//        System.out.print("Enter number: ");
+//
+//        int choice = scanner.nextInt();
+//        scanner.nextLine();
+//
+//        Movie selectedMovie = results.get(choice - 1);
+//
+//        displayMovieInfo(selectedMovie);
+//
+//        System.out.println("\n ** Press Enter to Return to Main Menu **");
+//        scanner.nextLine();
+//
+//
+    }
 
-        // Search all cast
-        for (int i = 0; i < movies.size(); i++)
-        {
-            String[] individualCast = movies.get(i).getCast().split("\\|");
-            for (String cast : individualCast) {
-                if (casts.contains())
-            }
-            String keywords = movies.get(i).getKeywords();
-            if (keywords.contains(searchTerm))
-            {
-                //add the Movie objest to the results list
-                results.add(movies.get(i));
-            }
+    private void setUniqueCastMembers() {
+        ArrayList<String> allCast = new ArrayList<String>();
+        ArrayList<String> checkedCast = new ArrayList<String>();
+        ArrayList<String> uniqueCast = new ArrayList<String>();
+
+        // Get all actors
+        for (int i = 0; i < movies.size(); i++) {
+            String[] tempArray = movies.get(i).getCast().split("\\|");
+            ArrayList<String> tempArray2 = new ArrayList<String>(Arrays.asList(tempArray));
+            allCast.addAll(tempArray2);
         }
 
-        // arraylist to hold search results
-        ArrayList<Movie> results = new ArrayList<Movie>();
 
-        // search through ALL movies in collection
-        for (int i = 0; i < movies.size(); i++)
-        {
-            String keywords = movies.get(i).getKeywords();
-            if (keywords.contains(searchTerm))
-            {
-                //add the Movie objest to the results list
-                results.add(movies.get(i));
+        for (int i = 0; i < allCast.size(); i++) {
+            String tempActor = allCast.get(i);
+            if (!checkedCast.contains(allCast.get(i))) {
+                uniqueCast.add(tempActor);
+                checkedCast.add(tempActor);
             }
         }
-
-        // sort the results by title
-        sortResults(results);
-
-        // now, display them all to the user
-        for (int i = 0; i < results.size(); i++)
-        {
-            String title = results.get(i).getTitle();
-
-            // this will print index 0 as choice 1 in the results list; better for user!
-            int choiceNum = i + 1;
-
-            System.out.println("" + choiceNum + ". " + title);
-        }
-
-        System.out.println("Which movie would you like to learn more about?");
-        System.out.print("Enter number: ");
-
-        int choice = scanner.nextInt();
-        scanner.nextLine();
-
-        Movie selectedMovie = results.get(choice - 1);
-
-        displayMovieInfo(selectedMovie);
-
-        System.out.println("\n ** Press Enter to Return to Main Menu **");
-        scanner.nextLine();
-
-
+        System.out.println(allCast.size());
+        this.uniqueCast = uniqueCast;
     }
 
     private void searchKeywords()
