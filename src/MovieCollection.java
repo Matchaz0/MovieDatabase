@@ -2,10 +2,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Scanner;
+import java.util.*;
 
 public class MovieCollection
 {
@@ -85,38 +82,6 @@ public class MovieCollection
         }
     }
 
-    private void searchTitles()
-    {
-        System.out.print("Enter a title search term: ");
-        String searchTerm = scanner.nextLine().toLowerCase(); // prevent case sensitivity
-
-
-        // arraylist to hold search results
-        ArrayList<Movie> results = new ArrayList<Movie>();
-
-        // search through ALL movies in collection
-        for (int i = 0; i < movies.size(); i++)
-        {
-            String movieTitle = movies.get(i).getTitle();
-            movieTitle = movieTitle.toLowerCase();
-
-            if (movieTitle.contains(searchTerm))
-            {
-                //add the Movie objest to the results list
-                results.add(movies.get(i));
-            }
-        }
-
-        // sort the results by title
-        sortResults(results);
-
-        // now, display them all to the user
-        askForMovieChoice(results, true);
-
-        System.out.println("\n ** Press Enter to Return to Main Menu **");
-        scanner.nextLine();
-    }
-
     private void sortResults(ArrayList<Movie> listToSort)
     {
         for (int j = 1; j < listToSort.size(); j++)
@@ -148,53 +113,38 @@ public class MovieCollection
         System.out.println("Box office revenue: " + movie.getRevenue());
     }
 
-    private void searchCategory(String categorySearch) {
-        System.out.print("Enter a " + categorySearch + "search term: ");
+
+
+    private void searchTitles() {
+        System.out.print("Enter a title search term: ");
         String searchTerm = scanner.nextLine().toLowerCase(); // prevent case sensitivity
 
-        ArrayList<String> results = new ArrayList<String>();
-        ArrayList<String> listToGoThrough = null;
-        if (categorySearch.equals("title")) {
-            listToGoThrough =
+
+        // arraylist to hold search results
+        ArrayList<Movie> results = new ArrayList<Movie>();
+
+        // search through ALL movies in collection
+        for (int i = 0; i < movies.size(); i++) {
+            String movieTitle = movies.get(i).getTitle();
+            movieTitle = movieTitle.toLowerCase();
+
+            if (movieTitle.contains(searchTerm)) {
+                //add the Movie objest to the results list
+                results.add(movies.get(i));
+            }
         }
+
+        // sort the results by title
+        sortResults(results);
+
+        // now, display them all to the user
+        askForMovieChoice(results, true);
+
+        System.out.println("\n ** Press Enter to Return to Main Menu **");
+        scanner.nextLine();
     }
 
-//        // search through ALL CAST in collection
-//        for (int i = 0; i < uniqueCast.size(); i++)
-//        {
-//            String castMember = uniqueCast.get(i);
-//            if (castMember.toLowerCase().contains(searchTerm)) {
-//                results.add(castMember);
-//            }
-//        }
-//        // sort the results by alphabet
-//        Collections.sort(results);
-//
-//        // now, display them all to the user
-//        for (int i = 0; i < results.size(); i++)
-//        {
-//            String cast = results.get(i);
-//            // this will print index 0 as choice 1 in the results list; better for user!
-//            int choiceNum = i + 1;
-//            System.out.println("" + choiceNum + ". " + cast);
-//        }
-//
-//        System.out.println("Which cast would you like to learn more about?");
-//        System.out.print("Enter number: ");
-//
-//        int choice = scanner.nextInt();
-//        scanner.nextLine();
-//
-//        String selectedCast = results.get(choice - 1);
-//        ArrayList<Movie> resultMovies = getMoviesOfAPerson(selectedCast);
-//
-//        // This method called alot
-//        askForMovieChoice(resultMovies, true);
-//        System.out.println("\n ** Press Enter to Return to Main Menu **");
-//        scanner.nextLine();
-//    }
-
-    private void searchCast()
+        private void searchCast()
     {
         System.out.print("Enter a cast member search term: ");
         String searchTerm = scanner.nextLine().toLowerCase(); // prevent case sensitivity
@@ -229,7 +179,7 @@ public class MovieCollection
         scanner.nextLine();
 
         String selectedCast = results.get(choice - 1);
-        ArrayList<Movie> resultMovies = getMoviesOfAPerson(selectedCast);
+        ArrayList<Movie> resultMovies = getMoviesOfACategory("cast", selectedCast);
 
         // This method called alot
         askForMovieChoice(resultMovies, true);
@@ -237,22 +187,23 @@ public class MovieCollection
         scanner.nextLine();
     }
 
-    private ArrayList<Movie> getMoviesOfAPerson(String cast) {
+    private ArrayList<Movie> getMoviesOfACategory(String category, String value) {
         ArrayList<Movie> resultMovies = new ArrayList<Movie>();
         for (Movie movie : movies) {
-            if (movie.getCast().contains(cast)) {
+            if (category.equals("title") && movie.getTitle().contains(value)) {
                 resultMovies.add(movie);
             }
-        }
-        return resultMovies;
-    }
+            if (category.equals("keyword") && movie.getKeywords().contains(value)) {
+                resultMovies.add(movie);
+            }
+            if (category.equals("cast") && movie.getCast().contains(value)) {
+                resultMovies.add(movie);
+            }
+            if (category.equals("genre") && movie.getGenres().contains(value)) {
+                resultMovies.add(movie);
+            }
 
-    private ArrayList<Movie> getMoviesOfGenre(String genre) {
-        ArrayList<Movie> resultMovies = new ArrayList<Movie>();
-        for (Movie movie : movies) {
-            if (movie.getGenres().contains(genre)) {
-                resultMovies.add(movie);
-            }
+
         }
         return resultMovies;
     }
@@ -371,7 +322,7 @@ public class MovieCollection
         scanner.nextLine();
 
         String selectedGenre = uniqueGenres.get(choice - 1);
-        ArrayList<Movie> resultMovies = getMoviesOfGenre(selectedGenre);
+        ArrayList<Movie> resultMovies = getMoviesOfACategory("genre", selectedGenre);
 
         // This method called alot
         askForMovieChoice(resultMovies, true);
