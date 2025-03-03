@@ -9,6 +9,7 @@ import java.util.Scanner;
 
 public class MovieCollection
 {
+    // instance variables
     private ArrayList<Movie> movies;
     private ArrayList<String> uniqueCast;
     private ArrayList<String> uniqueGenres;
@@ -20,10 +21,11 @@ public class MovieCollection
     {
         importMovieList(fileName);
         scanner = new Scanner(System.in);
+        // init required lists
         setUniqueCastMembers();
         setUniqueGenres();
-        setHighestRated();
-        setHighestRevenue();
+        top50Rated = setHighestCategory(top50Rated, "rating", 50);
+        top50Grossing = setHighestCategory(top50Grossing, "revenue", 50);
     }
 
     public ArrayList<Movie> getMovies()
@@ -60,28 +62,22 @@ public class MovieCollection
 
     private void processOption(String option)
     {
-        if (option.equals("t"))
-        {
+        if (option.equals("t")) {
             searchTitles();
         }
-        else if (option.equals("c"))
-        {
+        else if (option.equals("c")) {
             searchCast();
         }
-        else if (option.equals("k"))
-        {
+        else if (option.equals("k")) {
             searchKeywords();
         }
-        else if (option.equals("g"))
-        {
+        else if (option.equals("g")) {
             listGenres();
         }
-        else if (option.equals("r"))
-        {
+        else if (option.equals("r")) {
             listTop50(top50Rated);
         }
-        else if (option.equals("h"))
-        {
+        else if (option.equals("h")) {
             listTop50(top50Grossing);
         }
         else
@@ -118,16 +114,7 @@ public class MovieCollection
         sortResults(results);
 
         // now, display them all to the user
-        for (int i = 0; i < results.size(); i++)
-        {
-            String title = results.get(i).getTitle();
-
-            // this will print index 0 as choice 1 in the results list; better for user!
-            int choiceNum = i + 1;
-
-            System.out.println("" + choiceNum + ". " + title);
-        }
-        askForMovieChoice(results);
+        askForMovieChoice(results, true);
 
         System.out.println("\n ** Press Enter to Return to Main Menu **");
         scanner.nextLine();
@@ -167,10 +154,7 @@ public class MovieCollection
     private void searchCast()
     {
         System.out.print("Enter a cast member search term: ");
-        String searchTerm = scanner.nextLine();
-
-        // prevent case sensitivity
-        searchTerm = searchTerm.toLowerCase();
+        String searchTerm = scanner.nextLine().toLowerCase(); // prevent case sensitivity
 
         // arraylist to hold search results
         ArrayList<String> results = new ArrayList<String>();
@@ -205,7 +189,7 @@ public class MovieCollection
         ArrayList<Movie> resultMovies = getMoviesOfAPerson(selectedCast);
 
         // This method called alot
-        askForMovieChoice(resultMovies);
+        askForMovieChoice(resultMovies, true);
         System.out.println("\n ** Press Enter to Return to Main Menu **");
         scanner.nextLine();
     }
@@ -230,42 +214,15 @@ public class MovieCollection
         return resultMovies;
     }
 
-    private void askForMovieChoice(ArrayList<Movie> movies) {
-        ArrayList<String> alphabeticalResultMovies = new ArrayList<>();
-        for (Movie movie : movies) {
-            alphabeticalResultMovies.add(movie.getTitle());
+    private void askForMovieChoice(ArrayList<Movie> movies, boolean sort) {
+        if (sort) {
+            sortResults(movies);
         }
-        Collections.sort(alphabeticalResultMovies);
-
-        for (int i = 0; i < movies.size(); i++) {
-            int choiceNum = i + 1;
-            System.out.println("" + choiceNum + ". " + alphabeticalResultMovies.get(i));
-        }
-
-        System.out.println("Which movie would you like to learn more about?");
-        System.out.print("Enter number: ");
-
-        int choice = scanner.nextInt();
-        scanner.nextLine();
-
-        // fuck this alphabetical thing
-        String selectedMovieAlphabetical = alphabeticalResultMovies.get(choice - 1);
-        Movie selectedMovieActual = null;
-        for (Movie movie : movies) {
-            if (movie.getTitle().equals(selectedMovieAlphabetical)) {
-                selectedMovieActual = movie;
-            }
-        }
-
-
-        displayMovieInfo(selectedMovieActual);
-    }
-
-    private void askForMovieNoAlphabetical(ArrayList<Movie> movies) {
         for (int i = 0; i < movies.size(); i++) {
             int choiceNum = i + 1;
             System.out.println("" + choiceNum + ". " + movies.get(i).getTitle());
         }
+
         System.out.println("Which movie would you like to learn more about?");
         System.out.print("Enter number: ");
 
@@ -377,7 +334,7 @@ public class MovieCollection
         ArrayList<Movie> resultMovies = getMoviesOfGenre(selectedGenre);
 
         // This method called alot
-        askForMovieChoice(resultMovies);
+        askForMovieChoice(resultMovies, true);
         System.out.println("\n ** Press Enter to Return to Main Menu **");
         scanner.nextLine();
     }
@@ -409,50 +366,34 @@ public class MovieCollection
     private void listTop50(ArrayList<Movie> top50List) {
         // now, display them all to the user
 
-        askForMovieNoAlphabetical(top50List);
+        askForMovieChoice(top50List, false);
         System.out.println("\n ** Press Enter to Return to Main Menu **");
         scanner.nextLine();
 
     }
 
-
-    private void setHighestRated() {
-    ArrayList<Movie> tempMovies = new ArrayList<Movie>(movies);
-    ArrayList<Movie> highestRatedMovies = new ArrayList<Movie>();
-    int howMany = 50;
-    for (int i = 0; i < howMany; i++) {
-        Movie bestMovie = findGreatest(tempMovies, 1);
-        highestRatedMovies.add(bestMovie);
-        tempMovies.remove(bestMovie);
-    }
-    top50Rated = highestRatedMovies;
-
-    }
-
-
-    private void setHighestRevenue()
-    {
+    private ArrayList<Movie> setHighestCategory(ArrayList<Movie> bestCategoryList, String category, int howMany) {
         ArrayList<Movie> tempMovies = new ArrayList<Movie>(movies);
-        ArrayList<Movie> highestGrossingMovies = new ArrayList<Movie>();
-        int howMany = 50;
+        ArrayList<Movie> highestRatedMovies = new ArrayList<Movie>();
         for (int i = 0; i < howMany; i++) {
-            Movie bestMovie = findGreatest(tempMovies, 2);
-            highestGrossingMovies.add(bestMovie);
+            Movie bestMovie = findGreatest(tempMovies, category);
+            highestRatedMovies.add(bestMovie);
             tempMovies.remove(bestMovie);
         }
-        top50Grossing = highestGrossingMovies;
+        return highestRatedMovies;
+
     }
 
-    private Movie findGreatest(ArrayList<Movie> movies, int type) {
+    private Movie findGreatest(ArrayList<Movie> movies, String category) {
         // find the highest score
         Movie highestRated = null;
         double highestScore = 0;
         for (Movie movie : movies) {
             double valueToCheck = 0;
-            if (type == 1) { // ratings
+            if (category.equals("rating")) { // ratings
                 valueToCheck = movie.getUserRating();
             }
-            else if (type == 2) { // revenue
+            else if (category.equals("revenue")) { // revenue
                 valueToCheck = movie.getRevenue();
             }
             if (valueToCheck > highestScore) {
@@ -461,7 +402,7 @@ public class MovieCollection
         }
 
         // depending on which, find the greasest
-        if (type == 1) { // ratings
+        if (category.equals("rating")) { // ratings
             ArrayList<Double> tempScore = new ArrayList<Double>();
             for (Movie movie : movies) {
                 tempScore.add(movie.getUserRating());
@@ -469,7 +410,7 @@ public class MovieCollection
             int indexOfHighestScore = tempScore.indexOf(highestScore);
             highestRated = movies.get(indexOfHighestScore);
         }
-        else if (type == 2) { // revenue
+        else if (category.equals("revenue")) { // revenue
             ArrayList<Integer> tempScore = new ArrayList<Integer>();
             for (Movie movie : movies) {
                 tempScore.add(movie.getRevenue());
